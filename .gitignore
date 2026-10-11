@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.egg-info/
+data/*
+!data/.gitkeep
+experiments/**/out/
+*.zip
+.DS_Store
