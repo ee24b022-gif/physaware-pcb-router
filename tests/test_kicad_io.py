@@ -215,3 +215,35 @@ def read_kicad_text(text, name):
         return read_kicad(p)
     finally:
         p.unlink()
+
+
+# ---- health checks ----------------------------------------------------------
+def test_health_and_alignment_on_synthetic_board():
+    from pcbroute.board import Board, Footprint, Pad, Segment, rotate_kicad
+    from pcbroute.kicad_io.health import board_health, pad_alignment
+
+    b = Board()
+    for ref, rot in (("R1", 0), ("R2", 90), ("R3", 180), ("R4", 270)):
+        fx, fy = 10.0 * (1 + int(rot / 90)), 10.0
+        b.footprints.append(Footprint(ref, "1k", "R", fx, fy, rot, "F.Cu"))
+        for num, lx in (("1", -0.8), ("2", 0.8)):
+            dx, dy = rotate_kicad(lx, 0, rot)
+            b.pads.append(Pad(ref, num, f"N_{ref}_{num}", "F.Cu", fx + dx, fy + dy, 1.0, 1.0,
+                              rot_deg=rot, layers=("F.Cu",)))
+            # a track that ends exactly on the pad centre and runs away from it
+            b.segments.append(Segment(f"N_{ref}_{num}", "F.Cu", fx + dx, fy + dy, fx + dx, fy + dy + 3.0, 0.2))
+    b.footprints.append(Footprint("U9", "x", "X", 0.0, 0.0, 0, "F.Cu"))
+    b.pads.append(Pad("C9", "1", "N_C9", "F.Cu", 10.0, 10.0, 1.0, 1.0, layers=("F.Cu",)))   # sits on R1's footprint
+    b.pads.append(Pad("C9", "2", None, "F.Cu", 50.0, 50.0, 1.0, 1.0, layers=("F.Cu",)))
+    h = board_health(b)
+    assert h["footprints_at_origin"] == ["U9"]
+    assert h["signal_pads_on_nets_with_no_copper"] == 1
+    assert h["overlapping_pad_pairs"] >= 1
+    al = pad_alignment(b)
+    assert all(hit == tot for hit, tot in al.values()) and set(al) == {0, 90, 180, 270}
+
+
+def test_health_cli(capsys):
+    assert main([str(D / "buck_mini.kicad_pcb"), "--health"]) == 0
+    out = capsys.readouterr().out
+    assert "overlapping pad pairs" in out and "rot" in out
