@@ -17,6 +17,23 @@ Physics-aware PCB routing research code for switching power stages (buck convert
 | `experiments/gate0/` | Headroom test: Freerouting vs heuristic vs expert layouts |
 | `docs/` | Gate specs, invention log, prior-art search log |
 
+## Reading KiCad files
+
+```bash
+python -m pcbroute.kicad_io path/to/file.kicad_pcb      # or .kicad_sch, .net, .kicad_mod, .kicad_pro, .dsn ...
+python -m pcbroute.kicad_io path/to/project_dir          # board + all schematic sheets + net classes
+python -m pcbroute.kicad_io file.kicad_pcb --json        # full parsed model
+python -m pcbroute.kicad_io file.kicad_sch --tree 3      # raw S-expression tree
+```
+
+```python
+from pcbroute.kicad_io import read_kicad, read_project
+board = read_kicad("buck.kicad_pcb").model     # pcbroute.board.Board
+proj = read_project("my_project_dir")           # .settings, .board, .schematics
+```
+
+For schematic connectivity, export a netlist with `kicad-cli sch export netlist` and read the `.net` file.
+
 ## Roadmap
 
 1. **Gate 0**: headroom test. Does a routing gap exist between a prioritized heuristic and an expert layout?

@@ -1,0 +1,14 @@
+(export (version "E")
+  (design (source "/tmp/buck.kicad_sch") (date "2026-10-12") (tool "Eeschema 8.0"))
+  (components
+    (comp (ref "Q1") (value "HS_FET") (footprint "Package_DFN_QFN:PowerPAK_5x6")
+      (libsource (lib "Transistor_FET") (part "Q_NMOS_GDS") (description "N-MOSFET"))
+      (property (name "Sheetname") (value "Root")))
+    (comp (ref "C1") (value "10u") (footprint "Capacitor_SMD:C_1206")
+      (libsource (lib "Device") (part "C"))))
+  (nets
+    (net (code "1") (name "VIN")
+      (node (ref "Q1") (pin "5") (pinfunction "D") (pintype "passive"))
+      (node (ref "C1") (pin "1") (pintype "passive")))
+    (net (code "2") (name "SW")
+      (node (ref "Q1") (pin "1") (pinfunction "S") (pintype "passive")))))

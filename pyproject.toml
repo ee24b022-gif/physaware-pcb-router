@@ -9,6 +9,9 @@ description = "Physics-aware PCB routing research code"
 requires-python = ">=3.10"
 dependencies = ["numpy"]
 
+[project.scripts]
+pcbroute-inspect = "pcbroute.kicad_io.__main__:main"
+
 [project.optional-dependencies]
 dev = ["pytest"]
 
