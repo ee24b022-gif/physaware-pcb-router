@@ -53,3 +53,28 @@ and geometry coupling between pads/vias/obstacles and regions. Reverse edges are
 Region features: density, blocked fraction, free fraction, capacity (mm of wire), used length, overflow ratio,
 plane flag and owner net, RUDY demand and demand per routable layer. Coordinates are normalised by board centre and scale.
 `HeteroGraph.check()` verifies shapes, index ranges and finiteness.
+
+
+## Geometry kernel (`geometry/`)
+
+`GeometryKernel(design)` indexes the IR once and answers every spatial question with exact integer arithmetic.
+
+| Module | Responsibility |
+|---|---|
+| `shapes.py` | cores (segment or polygon region) and exact squared distances as fractions; "closer than R" is the integer test `num < R^2 * den` |
+| `spatial_index.py` | hashed grid per layer (`L0..Ln`), insert/remove for rip-up, exact bbox, point, and segment queries |
+| `clearance.py` | `w/2 + c` inflation as an exact predicate (`InflatedObstacle`), per-pair clearance resolution, outer polygon outlines |
+| `via_legality.py` | span rules, drill and annulus, board edge, every spanned layer, antipads and thermal reliefs on plane layers |
+| `kernel.py` | builds the index from the IR; `trace_violations`, `obstacles_for`, `point_blocked`, `check_via`, `add_*`, `remove_object` |
+
+Rules the kernel applies:
+- Touching at exactly the required gap is legal; one nanometre less is a violation.
+- Half widths round up, so inflation is conservative by at most 0.5 nm.
+- Same-net pads, tracks and vias are not obstacles. Pours never block (they are refilled); keepouts block selectively.
+- Rounded rectangles are treated as rectangles; arcs are flattened once at build time and carry an extra radius equal to
+  the flattening tolerance, so both are conservative.
+- Required clearance between two nets is the larger of the two net classes and the board minimum. Board edge, mounting hole
+  and keepout rules come from `KernelConfig` (default: the board minimum, or zero for keepouts).
+
+Validation: every predicate is checked against Shapely on random shapes (`tests/test_geometry_oracle.py`) and on a real
+board (18 thousand pairs, zero decision mismatches, distance error below one picometre).

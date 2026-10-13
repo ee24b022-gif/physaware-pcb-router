@@ -133,7 +133,7 @@ def build_graph(d: Design, cfg: GraphConfig = GraphConfig()) -> HeteroGraph:
                                                       v.position.y + r), None, span, v.net, True, True))
     for z in d.copper.zones:
         if z.kind == ZoneKind.KEEPOUT:
-            blocks = bool({"tracks", "copper"} & set(z.forbids))
+            blocks = "tracks" in z.forbids
             obs.append(_Obstacle(z.id, "keepout_zone", ring_bbox(z.outline), z.outline, (z.layer,), None, z.locked, blocks))
         elif st.layer(z.layer).kind in (LayerKind.POWER, LayerKind.GROUND):
             obs.append(_Obstacle(z.id, "plane_zone", ring_bbox(z.outline), z.outline, (z.layer,), z.net, z.locked, False))
