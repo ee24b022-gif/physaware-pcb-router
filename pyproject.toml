@@ -13,7 +13,9 @@ dependencies = ["numpy"]
 pcbroute-inspect = "pcbroute.kicad_io.__main__:main"
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = ["pytest", "networkx"]
+graph = ["networkx"]
+ml = ["torch", "torch_geometric"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

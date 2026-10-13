@@ -54,6 +54,9 @@ class Pad:
     layers: tuple[str, ...] = ()   # all copper layers the pad exists on
     kind: str = "smd"          # smd | thru_hole | np_thru_hole | connect
     drill: float | None = None
+    uuid: str = ""
+    function: str = ""         # pin function from the file (e.g. "D", "S", "G") when the CAD tool wrote it
+    fp_index: int = -1         # index into Board.footprints; the reliable pad-to-footprint link
 
     def corners(self) -> list[tuple[float, float]]:
         """Corners of the pad's rectangle (bounding box for round and oval shapes)."""
@@ -79,6 +82,22 @@ class Segment:
     x2: float
     y2: float
     width: float
+    uuid: str = ""
+    locked: bool = False
+    arc_index: int | None = None   # set when this segment is a flattened piece of Board.arcs[arc_index]
+
+
+@dataclass
+class Arc:
+    """A track arc exactly as stored in the file (the flattened pieces also appear in Board.segments)."""
+    net: str | None
+    layer: str
+    start: tuple[float, float]
+    mid: tuple[float, float]
+    end: tuple[float, float]
+    width: float
+    uuid: str = ""
+    locked: bool = False
 
 
 @dataclass
@@ -89,6 +108,8 @@ class Via:
     diameter: float
     drill: float
     layers: tuple[str, str]
+    uuid: str = ""
+    locked: bool = False
 
 
 @dataclass
@@ -99,6 +120,9 @@ class Zone:
     keepout: bool = False
     filled: bool = False       # True for a computed fill polygon, False for the outline
     keepout_rules: dict = field(default_factory=dict)
+    uuid: str = ""
+    zone_index: int = -1       # index of the zone in the file; groups an outline with its fills
+    locked: bool = False
 
 
 @dataclass
@@ -111,6 +135,9 @@ class Footprint:
     rot_deg: float
     layer: str
     properties: dict = field(default_factory=dict)
+    uuid: str = ""
+    locked: bool = False
+    courtyard: list[tuple[float, float, float, float]] = field(default_factory=list)  # board-coordinate edges
 
 
 @dataclass
@@ -118,6 +145,7 @@ class Board:
     stackup: list[Layer] = field(default_factory=list)
     pads: list[Pad] = field(default_factory=list)
     segments: list[Segment] = field(default_factory=list)
+    arcs: list[Arc] = field(default_factory=list)
     vias: list[Via] = field(default_factory=list)
     zones: list[Zone] = field(default_factory=list)
     footprints: list[Footprint] = field(default_factory=list)

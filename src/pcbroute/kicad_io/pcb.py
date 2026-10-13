@@ -8,14 +8,55 @@ from __future__ import annotations
 import math
 import re
 
-from ..board import Board, Footprint, Layer, Pad, Segment, Via, Zone, rotate_kicad
-from .sexpr import Node
+from ..board import Arc, Board, Footprint, Layer, Pad, Segment, Via, Zone, rotate_kicad
+from .sexpr import Node, Sym
 
 ARC_TOL_MM = 0.02
 
 
 def _num(v, default: float = 0.0) -> float:
     return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else default
+
+
+def _uuid(item: Node) -> str:
+    v = item.value("uuid", item.value("tstamp", ""))
+    return str(v) if v else ""
+
+
+def _locked(item: Node) -> bool:
+    if str(item.value("locked", "no")) == "yes":
+        return True
+    return any(isinstance(a, Sym) and a == "locked" for a in item.atoms())
+
+
+def _courtyard(fp: Node, fx: float, fy: float, frot: float) -> list[tuple[float, float, float, float]]:
+    """Courtyard edges in board coordinates (from fp_line/fp_rect/fp_poly/fp_circle on *.CrtYd)."""
+    def tr(p):
+        dx, dy = rotate_kicad(p[0], p[1], frot)
+        return (fx + dx, fy + dy)
+
+    def ring(pts):
+        t = [tr(p) for p in pts]
+        return [(a[0], a[1], b[0], b[1]) for a, b in zip(t, t[1:] + t[:1])]
+
+    out: list[tuple[float, float, float, float]] = []
+    for n in fp.children():
+        if not str(n.value("layer", "")).endswith(".CrtYd"):
+            continue
+        if n.name == "fp_line":
+            a, b = tr(n.xy("start")), tr(n.xy("end"))
+            out.append((a[0], a[1], b[0], b[1]))
+        elif n.name == "fp_rect":
+            (x1, y1), (x2, y2) = n.xy("start"), n.xy("end")
+            out += ring([(x1, y1), (x2, y1), (x2, y2), (x1, y2)])
+        elif n.name == "fp_poly":
+            out += ring(_pts(n))
+        elif n.name == "fp_circle":
+            (cx, cy), (ex, ey) = n.xy("center"), n.xy("end")
+            r = math.hypot(ex - cx, ey - cy)
+            out += ring([(cx + r * math.cos(2 * math.pi * i / 32), cy + r * math.sin(2 * math.pi * i / 32))
+                         for i in range(32)])
+    return out
 
 
 def _copper_sort_key(name: str) -> int:
@@ -157,7 +198,8 @@ def _parse_footprint(fp: Node, net_map: dict[int, str], copper: list[str]) -> tu
     props = _fp_props(fp)
     ref = props.get("Reference", "")
     footprint = Footprint(ref=ref, value=props.get("Value", ""), lib_id=lib_id,
-                          x=fx, y=fy, rot_deg=frot, layer=layer, properties=props)
+                          x=fx, y=fy, rot_deg=frot, layer=layer, properties=props,
+                          uuid=_uuid(fp), locked=_locked(fp), courtyard=_courtyard(fp, fx, fy, frot))
     pads: list[Pad] = []
     for pad in fp.children("pad"):
         pa = pad.atoms()
@@ -177,7 +219,8 @@ def _parse_footprint(fp: Node, net_map: dict[int, str], copper: list[str]) -> tu
         pads.append(Pad(
             ref=ref, number=number, net=_net_of(pad, net_map),
             layer=lyrs[0] if lyrs else "", x=fx + dx, y=fy + dy, w=w, h=h,
-            rot_deg=pang, shape=shape, layers=lyrs, kind=kind, drill=_drill(pad),
+            rot_deg=pang, shape=shape, layers=lyrs, kind=kind, drill=_drill(pad), uuid=_uuid(pad),
+            function=str(pad.value("pinfunction", "")),
         ))
     return footprint, pads
 
@@ -214,17 +257,20 @@ def _zone_layers(z: Node, copper: list[str]) -> list[str]:
 
 
 def _read_zones(root: Node, board: Board, net_map: dict[int, str], copper: list[str]) -> None:
-    for z in root.children("zone"):
+    for zi, z in enumerate(root.children("zone")):
+        zu, zl = _uuid(z), _locked(z)
         net = _net_of(z, net_map)
         ko = z.child("keepout")
         rules = {c.name: str(c.atoms()[0]) for c in ko.children() if c.atoms()} if ko is not None else {}
         poly = _pts(z.child("polygon"))
         for layer in _zone_layers(z, copper):
             board.zones.append(Zone(net=net, layer=layer, polygon=poly, keepout=ko is not None,
-                                    filled=False, keepout_rules=rules))
+                                    filled=False, keepout_rules=rules,
+                                    uuid=zu, zone_index=zi, locked=zl))
         for fpoly in z.children("filled_polygon"):
             board.zones.append(Zone(net=net, layer=str(fpoly.value("layer", "")), polygon=_pts(fpoly),
-                                    keepout=ko is not None, filled=True, keepout_rules=rules))
+                                    keepout=ko is not None, filled=True, keepout_rules=rules,
+                                    uuid=zu, zone_index=zi, locked=zl))
 
 
 def _read_outline(root: Node, board: Board) -> None:
@@ -276,23 +322,30 @@ def parse_board(root: Node) -> Board:
 
     for fp in list(root.children("footprint")) + list(root.children("module")):
         f, pads = _parse_footprint(fp, net_map, copper)
+        for p in pads:
+            p.fp_index = len(b.footprints)
         b.footprints.append(f)
         b.pads.extend(pads)
 
     for s in root.children("segment"):
         (x1, y1), (x2, y2) = s.xy("start"), s.xy("end")
         b.segments.append(Segment(_net_of(s, net_map), str(s.value("layer", "")),
-                                  x1, y1, x2, y2, _num(s.value("width"))))
+                                  x1, y1, x2, y2, _num(s.value("width")), uuid=_uuid(s), locked=_locked(s)))
     for a in root.children("arc"):
         pts = _arc_points(a.xy("start"), a.xy("mid"), a.xy("end"))
         net, layer, width = _net_of(a, net_map), str(a.value("layer", "")), _num(a.value("width"))
+        idx = len(b.arcs)
+        b.arcs.append(Arc(net, layer, a.xy("start"), a.xy("mid"), a.xy("end"), width,
+                          uuid=_uuid(a), locked=_locked(a)))
         for p, q in zip(pts, pts[1:]):
-            b.segments.append(Segment(net, layer, p[0], p[1], q[0], q[1], width))
+            b.segments.append(Segment(net, layer, p[0], p[1], q[0], q[1], width, uuid=_uuid(a),
+                                      locked=_locked(a), arc_index=idx))
     for v in root.children("via"):
         x, y = v.xy("at")
         ls = [str(x) for x in v.values("layers")]
         b.vias.append(Via(_net_of(v, net_map), x, y, _num(v.value("size")), _num(v.value("drill")),
-                          (ls[0], ls[1]) if len(ls) >= 2 else ("F.Cu", "B.Cu")))
+                          (ls[0], ls[1]) if len(ls) >= 2 else ("F.Cu", "B.Cu"),
+                          uuid=_uuid(v), locked=_locked(v)))
     _read_zones(root, b, net_map, copper)
     _read_outline(root, b)
     return b

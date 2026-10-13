@@ -6,16 +6,18 @@ Physics-aware PCB routing research code for switching power stages (buck convert
 
 ## Layout
 
-| Path | Purpose |
-|---|---|
-| `src/pcbroute/board.py` | Board data model (pads, segments, vias, zones, stack-up) |
-| `src/pcbroute/kicad_io/` | KiCad `.kicad_pcb` reading and DSN/SES exchange |
-| `src/pcbroute/fasthenry/` | Hot-loop identification and FastHenry `.inp` generation |
-| `src/pcbroute/grid/` | Rasterization of boards onto routing grids |
-| `src/pcbroute/router/` | Classical router (A*, rip-up) and later RL agent |
-| `src/pcbroute/surrogate/` | Learned inductance estimator |
-| `experiments/gate0/` | Headroom test: Freerouting vs heuristic vs expert layouts |
-| `docs/` | Gate specs, invention log, prior-art search log |
+See `docs/architecture.md` for the package map, dependency rules, IR design decisions, and graph schema.
+
+```python
+from pcbroute.kicad_io import read_kicad
+from pcbroute.ir import ir_from_kicad
+from pcbroute.graph import build_graph
+
+design = ir_from_kicad(read_kicad("board.kicad_pcb").model)    # Stage A: canonical IR
+assert not [i for i in design.validate() if i.level == "error"]
+graph = build_graph(design)                                    # Stage C: heterogeneous graph (numpy)
+data = graph.to_pyg()                                          # torch_geometric HeteroData (needs the ml extra)
+```
 
 ## Reading KiCad files
 

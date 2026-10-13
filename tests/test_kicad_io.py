@@ -88,7 +88,7 @@ def test_pad_layers_and_thru_hole(board):
 
 
 def test_footprints_segments_vias(board):
-    assert {f.ref for f in board.footprints} == {"Q1", "C1"}
+    assert {f.ref for f in board.footprints} == {"Q1", "C1", "H1"}
     assert board.footprint("Q1").value == "HS_FET"
     seg = next(s for s in board.segments if s.net == "VIN")
     assert (seg.x1, seg.x2, seg.width, seg.layer) == (100.0, 103.0, 0.5, "F.Cu")
@@ -203,7 +203,7 @@ def test_summary_and_cli(capsys):
     assert "Q1" in text and "VIN: 2" in text
     assert main([str(D / "buck_mini.kicad_pcb"), "--json"]) == 0
     data = json.loads(capsys.readouterr().out)
-    assert len(data["pads"]) == 4
+    assert len(data["pads"]) == 5
     assert main([str(D / "buck_mini.kicad_pcb"), "--tree", "1"]) == 0
     assert main([str(D / "nonexistent.kicad_pcb")]) == 1
 
@@ -247,3 +247,29 @@ def test_health_cli(capsys):
     assert main([str(D / "buck_mini.kicad_pcb"), "--health"]) == 0
     out = capsys.readouterr().out
     assert "overlapping pad pairs" in out and "rot" in out
+
+
+# ---- IDs, locked flags, arcs, courtyards (needed by the IR) ----------------------
+def test_uuid_locked_arcs_courtyard(board):
+    assert next(p for p in board.pads if p.ref == "Q1" and p.number == "1").uuid == ""      # fixture pads have no uuid
+    assert next(s for s in board.segments if s.net == "VIN").uuid == "s1"
+    assert board.vias[0].locked is True and board.vias[0].uuid == "v1"
+    assert board.footprint("H1").locked is True and board.footprint("Q1").locked is False
+    assert len(board.arcs) == 1 and board.arcs[0].uuid == "a1" and board.arcs[0].start == (110, 100)
+    flat = [s for s in board.segments if s.arc_index is not None]
+    assert flat and all(s.arc_index == 0 for s in flat)
+    cy = board.footprint("Q1").courtyard          # rect (-2,-1.5)..(2,1.5), footprint at (100,100) rot 90
+    xs = [v for e in cy for v in (e[0], e[2])]
+    ys = [v for e in cy for v in (e[1], e[3])]
+    assert (round(min(xs), 6), round(max(xs), 6)) == (98.5, 101.5)      # 3.0 wide after the 90 degree rotation
+    assert (round(min(ys), 6), round(max(ys), 6)) == (98.0, 102.0)
+    assert len(cy) == 4
+    z = [z for z in board.zones if z.net == "GND"]
+    assert {zz.zone_index for zz in z} == {0} and z[0].uuid == "z1"
+
+
+def test_netclass_wildcards():
+    from pcbroute.kicad_io.project import parse_project
+    ps = parse_project({"net_settings": {"classes": [{"name": "Default", "track_width": 0.25}, {"name": "Power", "track_width": 1.0}],
+                                         "netclass_patterns": [{"netclass": "Power", "pattern": "VDD*"}]}})
+    assert ps.netclass_for("VDD_1p8V").name == "Power" and ps.netclass_for("SW").name == "Default"

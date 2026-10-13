@@ -1,6 +1,7 @@
 """Project settings (.kicad_pro JSON), custom rules (.kicad_dru), library tables, Specctra summaries."""
 from __future__ import annotations
 
+import fnmatch
 from dataclasses import dataclass, field
 
 from .sexpr import Node
@@ -25,9 +26,9 @@ class ProjectSettings:
     raw: dict = field(default_factory=dict)
 
     def netclass_for(self, net: str) -> NetClass | None:
-        """Exact-name match against patterns, then the Default class."""
+        """First matching pattern (exact name or `*`/`?` wildcard), then the Default class."""
         for pattern, cls in self.netclass_patterns:
-            if pattern == net and cls in self.net_classes:
+            if cls in self.net_classes and (pattern == net or fnmatch.fnmatchcase(net, pattern)):
                 return self.net_classes[cls]
         return self.net_classes.get("Default")
 
