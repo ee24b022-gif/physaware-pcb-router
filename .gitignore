@@ -1,10 +1,116 @@
-.venv/
-__pycache__/
-*.pyc
-.pytest_cache/
-*.egg-info/
-data/*
-!data/.gitkeep
-experiments/**/out/
-*.zip
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+.venv
+venv
+env
+ENV
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+.eslintcache
+
+# Build artifacts
+*.o
+*.so
+*.dylib
+*.dll
+*.lib
+*.a
+*.exe
+*.out
+*.app
+*.deb
+*.rpm
+*.msi
+*.dmg
+*.pkg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.iml
+
+# Environment/Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Large temporary simulation/output files
+*.tmp
+*.temp
+*.log
+*.out
+*.dat
+*.bin
+*.h5
+*.hdf5
+*.nc
+*.vtk
+*.vtu
+*.csv.gz
+*.parquet
+*.pickle
+*.pkl
+simulation_*/
+output_*/
+results_*/
+*.prof
+*.trace
+
+# Test artifacts
+.coverage
+htmlcov/
+.tox/
+.nox/
+*.cover
+.hypothesis/
+
+# Documentation build
+docs/_build/
+site/
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
