@@ -11,6 +11,11 @@ dependencies = ["numpy"]
 
 [project.scripts]
 pcbroute-inspect = "pcbroute.kicad_io.__main__:main"
+pcbroute-train = "pcbroute.ml.cli:train_main"
+pcbroute-evaluate = "pcbroute.ml.cli:evaluate_main"
+pcbroute-route-safe = "pcbroute.routing.safe_select:main"
+pcbroute-train-congestion = "pcbroute.ml.cli:train_congestion_main"
+pcbroute-predict-congestion = "pcbroute.ml.cli:predict_congestion_main"
 
 [project.optional-dependencies]
 dev = ["pytest", "networkx", "shapely"]

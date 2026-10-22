@@ -113,7 +113,10 @@ def test_pyg_export(g):
         import torch_geometric  # noqa: F401
     except Exception as e:                       # missing or broken torch install: skip, do not fail
         pytest.skip(f"torch / torch_geometric unavailable: {type(e).__name__}")
-    data = g.to_pyg()
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning, message=".*torch.jit.script.*")
+        data = g.to_pyg()
     assert set(data.node_types) == NODE_TYPES
     assert data["pad"].x.shape == tuple(g.x["pad"].shape) and data["pad"].x.dtype == torch.float32
     assert data["pad", "member_of", "net"].edge_index.dtype == torch.int64

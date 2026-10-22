@@ -1,0 +1,250 @@
+{
+  "summary": {
+    "fixtures_evaluated": 4,
+    "fixtures_skipped": 0,
+    "skipped_details": [],
+    "heuristic_clean_pass_rate": 1.0,
+    "ml_clean_pass_rate": 1.0,
+    "selected_method_counts": {
+      "heuristic": 3,
+      "ml": 1
+    },
+    "paired_comparison": {
+      "ml_wins": 1,
+      "ties": 0,
+      "losses": 3
+    },
+    "avg_wire_length_mm": {
+      "heuristic": 117.64750000000001,
+      "ml": 118.14750000000001
+    },
+    "median_wire_length_mm": {
+      "heuristic": 114.08000000000001,
+      "ml": 115.08000000000001
+    },
+    "avg_via_count": {
+      "heuristic": 1,
+      "ml": 1
+    },
+    "export_reparse_failures": 0,
+    "validation_failures": 0,
+    "heuristic_all_routed_rate": 1.0,
+    "ml_all_routed_rate": 1.0,
+    "heuristic_validation_failures": 0,
+    "ml_validation_failures": 0
+  },
+  "results": [
+    {
+      "fixture_path": "tests/data/multi_net.kicad_pcb",
+      "fixture_name": "multi_net.kicad_pcb",
+      "routable_net_count": 4,
+      "heuristic_order": [
+        "NET_A",
+        "NET_C",
+        "NET_B",
+        "GND"
+      ],
+      "ml_order": [
+        "NET_B",
+        "NET_C",
+        "NET_A",
+        "GND"
+      ],
+      "orders_differ": true,
+      "checkpoint_loaded": true,
+      "heuristic_metrics": {
+        "routed": 4,
+        "partial": 0,
+        "failed": 0,
+        "wire_length_mm": 95.08,
+        "via_count": 0,
+        "runtime_s": 0.5106821060180664
+      },
+      "ml_metrics": {
+        "routed": 4,
+        "partial": 0,
+        "failed": 0,
+        "wire_length_mm": 95.08,
+        "via_count": 0,
+        "runtime_s": 0.5202162265777588
+      },
+      "selected_method": "heuristic",
+      "selection_reason": "Heuristic candidate selected (lower runtime: 0.511s vs 0.520s)",
+      "clean_pass": true,
+      "routed_nets": 4,
+      "partial_nets": 0,
+      "failed_nets": 0,
+      "wire_length_mm": 95.08,
+      "via_count": 0,
+      "clearance_conflicts": 0,
+      "shorts": 0,
+      "out_of_board": 0,
+      "export_path": "tests/data/multi_net.kicad_pcb",
+      "reparse_success": true,
+      "reparse_errors": [],
+      "validator_warnings": [],
+      "validator_errors": [],
+      "runtime_s": 1.0674597499964875,
+      "timeout": false,
+      "failure_reason": null
+    },
+    {
+      "fixture_path": "tests/data/multi_net_open.kicad_pcb",
+      "fixture_name": "multi_net_open.kicad_pcb",
+      "routable_net_count": 3,
+      "heuristic_order": [
+        "NET_1",
+        "NET_2",
+        "GND"
+      ],
+      "ml_order": [
+        "NET_2",
+        "GND",
+        "NET_1"
+      ],
+      "orders_differ": true,
+      "checkpoint_loaded": true,
+      "heuristic_metrics": {
+        "routed": 3,
+        "partial": 0,
+        "failed": 0,
+        "wire_length_mm": 131.08,
+        "via_count": 2,
+        "runtime_s": 1.2420380115509033
+      },
+      "ml_metrics": {
+        "routed": 3,
+        "partial": 0,
+        "failed": 0,
+        "wire_length_mm": 133.08,
+        "via_count": 2,
+        "runtime_s": 1.3933470249176025
+      },
+      "selected_method": "heuristic",
+      "selection_reason": "Heuristic candidate selected (shorter wire length: 131.1mm vs 133.1mm)",
+      "clean_pass": true,
+      "routed_nets": 3,
+      "partial_nets": 0,
+      "failed_nets": 0,
+      "wire_length_mm": 131.08,
+      "via_count": 2,
+      "clearance_conflicts": 0,
+      "shorts": 0,
+      "out_of_board": 0,
+      "export_path": "tests/data/multi_net_open.kicad_pcb",
+      "reparse_success": true,
+      "reparse_errors": [],
+      "validator_warnings": [],
+      "validator_errors": [],
+      "runtime_s": 2.6509247919966583,
+      "timeout": false,
+      "failure_reason": null
+    },
+    {
+      "fixture_path": "tests/data/multi_net_obstacle.kicad_pcb",
+      "fixture_name": "multi_net_obstacle.kicad_pcb",
+      "routable_net_count": 3,
+      "heuristic_order": [
+        "NET_B",
+        "NET_A",
+        "GND"
+      ],
+      "ml_order": [
+        "NET_A",
+        "GND",
+        "NET_B"
+      ],
+      "orders_differ": true,
+      "checkpoint_loaded": true,
+      "heuristic_metrics": {
+        "routed": 3,
+        "partial": 0,
+        "failed": 0,
+        "wire_length_mm": 97.08,
+        "via_count": 0,
+        "runtime_s": 0.7808268070220947
+      },
+      "ml_metrics": {
+        "routed": 3,
+        "partial": 0,
+        "failed": 0,
+        "wire_length_mm": 97.08000000000001,
+        "via_count": 0,
+        "runtime_s": 0.7866909503936768
+      },
+      "selected_method": "heuristic",
+      "selection_reason": "Heuristic candidate selected (lower runtime: 0.781s vs 0.787s)",
+      "clean_pass": true,
+      "routed_nets": 3,
+      "partial_nets": 0,
+      "failed_nets": 0,
+      "wire_length_mm": 97.08,
+      "via_count": 0,
+      "clearance_conflicts": 0,
+      "shorts": 0,
+      "out_of_board": 0,
+      "export_path": "tests/data/multi_net_obstacle.kicad_pcb",
+      "reparse_success": true,
+      "reparse_errors": [],
+      "validator_warnings": [],
+      "validator_errors": [],
+      "runtime_s": 1.5835105840014876,
+      "timeout": false,
+      "failure_reason": null
+    },
+    {
+      "fixture_path": "tests/data/multi_net_congested.kicad_pcb",
+      "fixture_name": "multi_net_congested.kicad_pcb",
+      "routable_net_count": 4,
+      "heuristic_order": [
+        "GND",
+        "NET_2",
+        "NET_3",
+        "NET_1"
+      ],
+      "ml_order": [
+        "NET_3",
+        "NET_1",
+        "NET_2",
+        "GND"
+      ],
+      "orders_differ": true,
+      "checkpoint_loaded": true,
+      "heuristic_metrics": {
+        "routed": 4,
+        "partial": 0,
+        "failed": 0,
+        "wire_length_mm": 147.35000000000002,
+        "via_count": 2,
+        "runtime_s": 1.5400042533874512
+      },
+      "ml_metrics": {
+        "routed": 4,
+        "partial": 0,
+        "failed": 0,
+        "wire_length_mm": 147.35,
+        "via_count": 2,
+        "runtime_s": 1.566871166229248
+      },
+      "selected_method": "ml",
+      "selection_reason": "ML candidate selected (lower runtime: 1.540s vs 1.567s)",
+      "clean_pass": true,
+      "routed_nets": 4,
+      "partial_nets": 0,
+      "failed_nets": 0,
+      "wire_length_mm": 147.35,
+      "via_count": 2,
+      "clearance_conflicts": 0,
+      "shorts": 0,
+      "out_of_board": 0,
+      "export_path": "tests/data/multi_net_congested.kicad_pcb",
+      "reparse_success": true,
+      "reparse_errors": [],
+      "validator_warnings": [],
+      "validator_errors": [],
+      "runtime_s": 3.124048874997243,
+      "timeout": false,
+      "failure_reason": null
+    }
+  ]
+}

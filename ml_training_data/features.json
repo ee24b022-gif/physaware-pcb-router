@@ -1,0 +1,62 @@
+[
+  {
+    "net_name": "GND",
+    "num_pins": 2,
+    "bbox_width_mm": 32.665834,
+    "bbox_height_mm": 43.426102,
+    "hpwl_mm": 76.091936,
+    "pin_density": 0.0014098905408422072,
+    "num_layers": 4,
+    "net_kind": 2,
+    "width_mm": 0.25,
+    "clearance_mm": 0.2,
+    "has_existing_copper": false,
+    "estimated_via_count": 0,
+    "escape_directions": 32
+  },
+  {
+    "net_name": "VCC",
+    "num_pins": 2,
+    "bbox_width_mm": 55.924806,
+    "bbox_height_mm": 17.779474,
+    "hpwl_mm": 73.70428,
+    "pin_density": 0.002011437770884733,
+    "num_layers": 4,
+    "net_kind": 1,
+    "width_mm": 0.25,
+    "clearance_mm": 0.2,
+    "has_existing_copper": false,
+    "estimated_via_count": 0,
+    "escape_directions": 32
+  },
+  {
+    "net_name": "NET2",
+    "num_pins": 2,
+    "bbox_width_mm": 19.184962,
+    "bbox_height_mm": 17.778125,
+    "hpwl_mm": 36.963087,
+    "pin_density": 0.005863853302252541,
+    "num_layers": 1,
+    "net_kind": 0,
+    "width_mm": 0.25,
+    "clearance_mm": 0.2,
+    "has_existing_copper": false,
+    "estimated_via_count": 0,
+    "escape_directions": 8
+  },
+  {
+    "net_name": "NET3",
+    "num_pins": 2,
+    "bbox_width_mm": 63.228704,
+    "bbox_height_mm": 12.521651,
+    "hpwl_mm": 75.750355,
+    "pin_density": 0.0025261208324970793,
+    "num_layers": 1,
+    "net_kind": 0,
+    "width_mm": 0.25,
+    "clearance_mm": 0.2,
+    "has_existing_copper": false,
+    "estimated_via_count": 0,
+    "escape_directions": 8
+  }
+]

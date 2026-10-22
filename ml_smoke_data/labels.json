@@ -1,0 +1,82 @@
+[
+  {
+    "net_name": "GND",
+    "route_success": true,
+    "path_length_mm": 77.642429,
+    "via_count": 0,
+    "steps_taken": 78,
+    "status": "routed"
+  },
+  {
+    "net_name": "VCC",
+    "route_success": true,
+    "path_length_mm": 74.216324,
+    "via_count": 0,
+    "steps_taken": 75,
+    "status": "routed"
+  },
+  {
+    "net_name": "NET2",
+    "route_success": true,
+    "path_length_mm": 38.504612,
+    "via_count": 0,
+    "steps_taken": 39,
+    "status": "routed"
+  },
+  {
+    "net_name": "NET3",
+    "route_success": true,
+    "path_length_mm": 75.353363,
+    "via_count": 0,
+    "steps_taken": 76,
+    "status": "routed"
+  },
+  {
+    "net_name": "GND",
+    "route_success": true,
+    "path_length_mm": 31.212629,
+    "via_count": 0,
+    "steps_taken": 32,
+    "status": "routed"
+  },
+  {
+    "net_name": "VCC",
+    "route_success": true,
+    "path_length_mm": 17.407619,
+    "via_count": 0,
+    "steps_taken": 18,
+    "status": "routed"
+  },
+  {
+    "net_name": "NET2",
+    "route_success": true,
+    "path_length_mm": 28.276816,
+    "via_count": 0,
+    "steps_taken": 29,
+    "status": "routed"
+  },
+  {
+    "net_name": "NET3",
+    "route_success": true,
+    "path_length_mm": 28.506853,
+    "via_count": 0,
+    "steps_taken": 29,
+    "status": "routed"
+  },
+  {
+    "net_name": "NET4",
+    "route_success": true,
+    "path_length_mm": 48.556545,
+    "via_count": 0,
+    "steps_taken": 49,
+    "status": "routed"
+  },
+  {
+    "net_name": "NET5",
+    "route_success": true,
+    "path_length_mm": 24.113759,
+    "via_count": 0,
+    "steps_taken": 25,
+    "status": "routed"
+  }
+]

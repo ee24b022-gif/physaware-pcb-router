@@ -1,0 +1,34 @@
+[
+  {
+    "net_name": "GND",
+    "route_success": true,
+    "path_length_mm": 77.642429,
+    "via_count": 0,
+    "steps_taken": 78,
+    "status": "routed"
+  },
+  {
+    "net_name": "VCC",
+    "route_success": true,
+    "path_length_mm": 74.216324,
+    "via_count": 0,
+    "steps_taken": 75,
+    "status": "routed"
+  },
+  {
+    "net_name": "NET2",
+    "route_success": true,
+    "path_length_mm": 38.504612,
+    "via_count": 0,
+    "steps_taken": 39,
+    "status": "routed"
+  },
+  {
+    "net_name": "NET3",
+    "route_success": true,
+    "path_length_mm": 75.353363,
+    "via_count": 0,
+    "steps_taken": 76,
+    "status": "routed"
+  }
+]

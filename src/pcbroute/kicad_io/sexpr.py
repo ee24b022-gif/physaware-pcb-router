@@ -9,7 +9,7 @@ import re
 from pathlib import Path
 from typing import Iterator
 
-__all__ = ["Sym", "Node", "ParseError", "parse", "parse_file", "read_text"]
+__all__ = ["Sym", "Node", "ParseError", "parse", "parse_file", "read_text", "dumps"]
 
 
 class ParseError(ValueError):
@@ -141,3 +141,57 @@ def read_text(path) -> str:
 
 def parse_file(path) -> Node:
     return parse(read_text(path))
+
+
+def _escape_string(s: str) -> str:
+    """Escape a string for S-expression output."""
+    s = s.replace("\\", "\\\\")
+    s = s.replace('"', '\\"')
+    s = s.replace("\n", "\\n")
+    s = s.replace("\t", "\\t")
+    s = s.replace("\r", "\\r")
+    return f'"{s}"'
+
+
+def _atom_to_str(atom) -> str:
+    """Convert an atom to its S-expression string representation."""
+    if isinstance(atom, Sym):
+        return str(atom)
+    elif isinstance(atom, str):
+        return _escape_string(atom)
+    elif isinstance(atom, bool):
+        return "yes" if atom else "no"
+    elif isinstance(atom, (int, float)):
+        # Use repr for exact representation
+        return str(atom)
+    elif isinstance(atom, tuple):
+        return " ".join(_atom_to_str(x) for x in atom)
+    else:
+        return str(atom)
+
+
+def _node_to_str(node: Node, indent: int = 0) -> str:
+    """Convert a Node to its S-expression string representation."""
+    ind = "  " * indent
+    parts = [node.name] if node.name and node.name != "__root__" else []
+    for arg in node.args:
+        if isinstance(arg, Node):
+            parts.append(_node_to_str(arg, indent + 1))
+        else:
+            parts.append(_atom_to_str(arg))
+    inner = " ".join(parts)
+    if node.name == "__root__":
+        # Multiple top-level forms, each on its own line
+        lines = []
+        for arg in node.args:
+            if isinstance(arg, Node):
+                lines.append(_node_to_str(arg, 0))
+            else:
+                lines.append(_atom_to_str(arg))
+        return "\n".join(lines)
+    return f"({inner})"
+
+
+def dumps(node: Node) -> str:
+    """Serialize a Node to an S-expression string."""
+    return _node_to_str(node)
